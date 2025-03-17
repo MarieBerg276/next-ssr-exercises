@@ -6,12 +6,24 @@ import reducer from './reducer';
 import StoreItem from './StoreItem';
 import CheckoutFlow from './CheckoutFlow';
 import './styles.css';
+import Spinner from '../../../components/Spinner'
 
 function CheckoutExercise() {
-  const [items, dispatch] = React.useReducer(
-    reducer,
-    []
-  );
+  const [items, dispatch] = React.useReducer(reducer, null);
+
+  React.useEffect(() => {
+    const savedItems = window.localStorage.getItem('cart-items')
+    console.log(savedItems)
+
+    dispatch({ type: 'initialize', items: savedItems === null ? [] : JSON.parse(savedItems) })
+  }, [])
+
+  React.useEffect(() => {
+    if (items !== null) {
+      window.localStorage.setItem('cart-items', JSON.stringify(items));
+    }
+
+  }, [items])
 
   return (
     <>
@@ -32,7 +44,6 @@ function CheckoutExercise() {
             />
           ))}
         </div>
-
         <CheckoutFlow
           items={items}
           taxRate={0.15}
